@@ -11,14 +11,14 @@
 Drive chassis (
   // Left Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  {10, 5}
+  {-5, -11},
 
   // Right Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  ,{-14, -13}
+  {6, 13}
 
   // IMU Port
-  ,12
+  ,15
 
   // Wheel Diameter (Remember, 4" wheels are actually 4.125!)
   //    (or tracking wheel diameter)
@@ -151,18 +151,56 @@ void autonomous() {
 void opcontrol() {
   // This is preference to what you like to drive on.
   chassis.set_drive_brake(MOTOR_BRAKE_COAST);
-
+  pros::Controller master(pros::E_CONTROLLER_MASTER);
+  pros::Motor intake(3, pros::E_MOTOR_GEAR_GREEN, true, pros::E_MOTOR_ENCODER_COUNTS);
+  pros::Motor h_motor(16, pros::E_MOTOR_GEAR_GREEN, false, pros::E_MOTOR_ENCODER_COUNTS);
+  pros::Motor roller(10, pros::E_MOTOR_GEAR_GREEN, false, pros::E_MOTOR_ENCODER_COUNTS);
+  pros::Motor indexer(1, pros::E_MOTOR_GEAR_GREEN, false, pros::E_MOTOR_ENCODER_COUNTS);
+  intake.move_velocity(0);
   while (true) {
 
-    chassis.tank(); // Tank control
+    // chassis.tank(); // Tank control
     // chassis.arcade_standard(ez::SPLIT); // Standard split arcade
-    // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
+    chassis.arcade_standard(ez::SINGLE); // Standard single arcade
     // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade
     // chassis.arcade_flipped(ez::SINGLE); // Flipped single arcade
 
     // . . .
     // Put more user control code here!
     // . . .
+
+    // H - drive
+    h_motor.move(master.get_analog(ANALOG_RIGHT_X));
+
+    // Intake를 A버튼과 B버튼으로 토글해서 한번 누르면 계속 move_velocity(600)이 되게 flag를 만들어서 작성
+    if (master.get_digital(DIGITAL_A)) {
+      intake.move_velocity(600);
+    }
+    else if (master.get_digital(DIGITAL_B)) {
+      intake.move_velocity(-600);
+    }
+    else{
+      intake.move_velocity(0);
+    }
+
+    // Roller
+    if (master.get_digital(DIGITAL_L1)) {
+      roller.move_velocity(600);
+    }
+    else if (master.get_digital(DIGITAL_L2)) {
+      roller.move_velocity(-600);
+    }
+    else{
+      roller.move_velocity(0);
+    }
+
+    // autoFire
+    if (master.get_digital(DIGITAL_X)) {
+      indexer.move_velocity(600);
+      pros::delay(1000);
+      indexer.move_velocity(0);
+    }
+
 
     pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
