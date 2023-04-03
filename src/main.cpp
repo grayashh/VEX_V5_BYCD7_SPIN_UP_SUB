@@ -11,11 +11,11 @@
 Drive chassis (
   // Left Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  {-5, -11},
+  {-13, -6},
 
   // Right Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  {6, 13}
+  {11, 5}
 
   // IMU Port
   ,15
@@ -93,7 +93,15 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {
-  // . . .
+  static int count = 1;
+	printf("Disabled called %d\n", count++);
+
+	while (true) {
+		printf("Disabled loop");
+
+		pros::delay(1000);
+	}
+
 }
 
 
@@ -111,19 +119,7 @@ void competition_initialize() {
   // . . .
 }
 
-
-
-/**
- * Runs the user autonomous code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the autonomous
- * mode. Alternatively, this function may be called in initialize or opcontrol
- * for non-competition testing purposes.
- *
- * If the robot is disabled or communications is lost, the autonomous task
- * will be stopped. Re-enabling the robot will restart the task, not re-start it
- * from where it left off.
- */
+// 오토 세팅
 void autonomous() {
   chassis.reset_pid_targets(); // Resets PID targets to 0
   chassis.reset_gyro(); // Reset gyro position to 0
@@ -133,75 +129,94 @@ void autonomous() {
   ez::as::auton_selector.call_selected_auton(); // Calls selected auton from autonomous selector.
 }
 
-
-
-/**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
- *
- * If no competition control is connected, this function will run immediately
- * following initialize().
- *
- * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
- */
+// 메뉴얼 코드
 void opcontrol() {
-  // This is preference to what you like to drive on.
+
   chassis.set_drive_brake(MOTOR_BRAKE_COAST);
+  // Port 세팅
   pros::Controller master(pros::E_CONTROLLER_MASTER);
   pros::Motor intake(3, pros::E_MOTOR_GEAR_GREEN, true, pros::E_MOTOR_ENCODER_COUNTS);
-  pros::Motor h_motor(16, pros::E_MOTOR_GEAR_GREEN, false, pros::E_MOTOR_ENCODER_COUNTS);
-  pros::Motor roller(10, pros::E_MOTOR_GEAR_GREEN, false, pros::E_MOTOR_ENCODER_COUNTS);
-  pros::Motor indexer(1, pros::E_MOTOR_GEAR_GREEN, false, pros::E_MOTOR_ENCODER_COUNTS);
+  pros::Motor h_motor(16, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_COUNTS);
+  pros::Motor L_roller(10, pros::E_MOTOR_GEAR_RED, false, pros::E_MOTOR_ENCODER_COUNTS);
+  pros::Motor R_roller(4, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_COUNTS);
+  pros::Motor_Group Roller ({L_roller, R_roller});
+  pros::Motor indexer(1, pros::E_MOTOR_GEAR_GREEN, true, pros::E_MOTOR_ENCODER_COUNTS);
+  pros::Motor U_Shooter (8, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
+  pros::Motor D_Shooter (9, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_COUNTS);
+  pros::Motor_Group Shooter ({U_Shooter, D_Shooter});
+
+  // Intaker flag 선언
   intake.move_velocity(0);
+  bool intake_flag = {false};
+  bool intake_reverse_flag = {false};
+
+  // Indexr Position 영점 세팅
+  indexer.set_zero_position(0);
+  indexer.tare_position();
+
+
   while (true) {
 
     // chassis.tank(); // Tank control
-    // chassis.arcade_standard(ez::SPLIT); // Standard split arcade
-    chassis.arcade_standard(ez::SINGLE); // Standard single arcade
+    chassis.arcade_standard(ez::SPLIT); // Standard split arcade
+    // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
     // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade
     // chassis.arcade_flipped(ez::SINGLE); // Flipped single arcade
 
-    // . . .
-    // Put more user control code here!
-    // . . .
+    h_motor.move(master.get_analog(ANALOG_LEFT_X));
 
-    // H - drive
-    h_motor.move(master.get_analog(ANALOG_RIGHT_X));
 
-    // Intake를 A버튼과 B버튼으로 토글해서 한번 누르면 계속 move_velocity(600)이 되게 flag를 만들어서 작성
-    if (master.get_digital(DIGITAL_A)) {
-      intake.move_velocity(600);
-    }
-    else if (master.get_digital(DIGITAL_B)) {
-      intake.move_velocity(-600);
-    }
-    else{
-      intake.move_velocity(0);
-    }
+    // Intake를 A버튼과 B버튼으로 토글해서 한번 누르면 계속 되게 flag를 만들어서 작성
+        if(master.get_digital_new_press(DIGITAL_L1)) {
+          intake_flag = !intake_flag;
+          if(intake_flag) {
+            intake.move_velocity(600);
+          }
+          else {
+            intake.move_velocity(0);
+          }
+        }
+
+        if(master.get_digital_new_press(DIGITAL_L2)) {
+          intake_reverse_flag = !intake_reverse_flag;
+          if(intake_reverse_flag) {
+            intake.move_velocity(-600);
+          }
+          else {
+            intake.move_velocity(0);
+          }
+        }
 
     // Roller
-    if (master.get_digital(DIGITAL_L1)) {
-      roller.move_velocity(600);
-    }
-    else if (master.get_digital(DIGITAL_L2)) {
-      roller.move_velocity(-600);
+    if (master.get_digital(DIGITAL_R2)) {
+      Roller.move_velocity(600);
     }
     else{
-      roller.move_velocity(0);
+      Roller.move_velocity(0);
     }
 
     // autoFire
-    if (master.get_digital(DIGITAL_X)) {
-      indexer.move_velocity(600);
-      pros::delay(1000);
-      indexer.move_velocity(0);
+    if (master.get_digital(DIGITAL_R1)) {
+      indexer.move_absolute(150,100);
+      pros::delay(100);
+      indexer.move_absolute(0,100);
     }
+
+// Shooter
+    if (master.get_digital(DIGITAL_RIGHT)) {
+      Shooter.move_velocity(600);
+    }
+    else if (master.get_digital(DIGITAL_LEFT)) {
+      Shooter.move_velocity(-300);
+    }
+    else if (master.get_digital(DIGITAL_DOWN)) {
+      Shooter.move_velocity(0);
+    }
+  
+
 
 
     pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
+
