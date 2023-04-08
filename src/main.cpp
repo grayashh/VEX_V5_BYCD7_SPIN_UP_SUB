@@ -1,5 +1,5 @@
 #include "main.h"
-
+#include "BYCD7.hpp"
 
 /////
 // For instalattion, upgrading, documentations and tutorials, check out website!
@@ -134,17 +134,6 @@ void opcontrol() {
 
   chassis.set_drive_brake(MOTOR_BRAKE_COAST);
   // Port 세팅
-  pros::Controller master(pros::E_CONTROLLER_MASTER);
-  pros::Motor intake(3, pros::E_MOTOR_GEAR_GREEN, true, pros::E_MOTOR_ENCODER_COUNTS);
-  pros::Motor h_motor(16, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_COUNTS);
-  pros::Motor L_roller(10, pros::E_MOTOR_GEAR_RED, false, pros::E_MOTOR_ENCODER_COUNTS);
-  pros::Motor R_roller(4, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_COUNTS);
-  pros::Motor_Group Roller ({L_roller, R_roller});
-  pros::Motor indexer(1, pros::E_MOTOR_GEAR_GREEN, true, pros::E_MOTOR_ENCODER_COUNTS);
-  pros::Motor U_Shooter (8, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
-  pros::Motor D_Shooter (9, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_COUNTS);
-  pros::Motor_Group Shooter ({U_Shooter, D_Shooter});
-
   // Intaker flag 선언
   intake.move_velocity(0);
   bool intake_flag = {false};

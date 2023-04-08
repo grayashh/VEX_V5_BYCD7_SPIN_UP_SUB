@@ -1,5 +1,5 @@
 #include "main.h"
-
+#include "BYCD7.hpp"
 
 /////
 // For instalattion, upgrading, documentations and tutorials, check out website!
@@ -76,26 +76,28 @@ void auto_test() {
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater then the slew distance + a few inches
 
-
-  chassis.set_drive_pid(24, DRIVE_SPEED, true);
-  chassis.wait_until(6);
-  chassis.set_max_speed(40); // After driving 6 inches at DRIVE_SPEED, the robot will go the remaining distance at 40 speed
+  intake.move_velocity(127);
+  chassis.set_drive_pid(-48, 40, true);
   chassis.wait_drive();
 
-  chassis.set_drive_pid(-12, DRIVE_SPEED);
+  chassis.set_swing_pid(ez::RIGHT_SWING, 45, SWING_SPEED);
   chassis.wait_drive();
 
-  chassis.set_turn_pid(90, TURN_SPEED);
-  chassis.wait_drive();
 
-  chassis.set_swing_pid(ez::LEFT_SWING, 45, SWING_SPEED);
-  chassis.wait_drive();
+  // chassis.set_drive_pid(-12, DRIVE_SPEED);
+  // chassis.wait_drive();
 
-  chassis.set_drive_pid(24, DRIVE_SPEED, true);
-  chassis.wait_until(12);
+  // chassis.set_turn_pid(90, TURN_SPEED);
+  // chassis.wait_drive();
 
-  chassis.set_swing_pid(ez::RIGHT_SWING, 0, SWING_SPEED);
-  chassis.wait_drive();
+  // chassis.set_swing_pid(ez::LEFT_SWIsNG, 45, SWING_SPEED);
+  // chassis.wait_drive();
+
+  // chassis.set_drive_pid(24, DRIVE_SPEED, true);
+  // chassis.wait_until(12);
+
+  // chassis.set_swing_pid(ez::RIGHT_SWING, 0, SWING_SPEED);
+  // chassis.wait_drive();
 
 }
 
