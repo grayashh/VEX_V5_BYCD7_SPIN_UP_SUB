@@ -119,8 +119,9 @@ void competition_initialize() {
   // . . .
 }
 
-// 오토 세팅
+// 오토 코드
 void autonomous() {
+  // 오토 세팅
   chassis.reset_pid_targets(); // Resets PID targets to 0
   chassis.reset_gyro(); // Reset gyro position to 0
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
@@ -184,7 +185,7 @@ void opcontrol() {
       Roller.move_velocity(0);
     }
 
-    // autoFire
+    // indexer
     if (master.get_digital(DIGITAL_R1)) {
       indexer.move_absolute(150,100);
       pros::delay(100);
@@ -193,10 +194,15 @@ void opcontrol() {
 
 // Shooter
     if (master.get_digital(DIGITAL_RIGHT)) {
-      Shooter.move_velocity(600);
+      Shooter.move_velocity(400);
     }
+    else if (master.get_digital(DIGITAL_UP))
+    {
+      Shooter.move_velocity(300);
+    }
+    
     else if (master.get_digital(DIGITAL_LEFT)) {
-      Shooter.move_velocity(-300);
+      Shooter.move_velocity(-30);
     }
     else if (master.get_digital(DIGITAL_DOWN)) {
       Shooter.move_velocity(0);

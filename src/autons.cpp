@@ -71,18 +71,39 @@ void modified_exit_condition() {
 // Drive Example
 ///
 void auto_test() {
+
+  indexer.set_zero_position(0);
+  indexer.tare_position();
   // The first parameter is target inches
   // The second parameter is max speed the robot will drive at
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater then the slew distance + a few inches
 
-  intake.move_velocity(127);
-  chassis.set_drive_pid(-48, 40, true);
+  intake.move_velocity(600);
+  chassis.set_drive_pid(-48, 30, true);
   chassis.wait_drive();
 
-  chassis.set_swing_pid(ez::RIGHT_SWING, 45, SWING_SPEED);
+  chassis.set_swing_pid(ez::RIGHT_SWING, 135, 90);
   chassis.wait_drive();
 
+  chassis.set_drive_pid(-10, 100, true);
+  chassis.wait_drive();
+  chassis.set_drive_pid(20, 100, true);
+  chassis.wait_drive();
+
+  chassis.set_swing_pid(ez::LEFT_SWING, 120, SWING_SPEED);
+  chassis.wait_drive();
+
+  intake.move_velocity(0);
+  Shooter.move_velocity(400);
+  pros::Task::delay(8000);
+  for(int i = 0; i < 3; i++){
+      indexer.move_absolute(150,100);
+      pros::Task::delay(100);
+      indexer.move_absolute(0,100);
+      pros::Task::delay(20);
+  }
+  Shooter.move_velocity(0);
 
   // chassis.set_drive_pid(-12, DRIVE_SPEED);
   // chassis.wait_drive();
