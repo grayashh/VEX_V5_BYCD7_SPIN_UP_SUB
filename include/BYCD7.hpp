@@ -15,5 +15,6 @@ inline pros::Motor indexer(1, pros::E_MOTOR_GEAR_GREEN, true, pros::E_MOTOR_ENCO
 inline pros::Motor U_Shooter (8, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_COUNTS);
 inline pros::Motor D_Shooter (9, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_COUNTS);
 inline pros::Motor_Group Shooter ({U_Shooter, D_Shooter});
+inline pros::Motor EndGame (7, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_COUNTS);
 
 #endif

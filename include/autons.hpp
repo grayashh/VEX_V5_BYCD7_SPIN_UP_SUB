@@ -4,7 +4,7 @@
 
 extern Drive chassis;
 
-void auto_test();
+void bycd_auto();
 
 void default_constants();
 void one_mogo_constants();

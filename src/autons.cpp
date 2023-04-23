@@ -65,12 +65,17 @@ void modified_exit_condition() {
   chassis.set_exit_condition(chassis.drive_exit, 80, 50, 300, 150, 500, 500);
 }
 
+void fire(){
+  indexer.move_absolute(180,100);
+  pros::Task::delay(500);
+  indexer.move_absolute(-20,100);
+}
 
 
 ///
 // Drive Example
 ///
-void auto_test() {
+void bycd_auto() {
 
   indexer.set_zero_position(0);
   indexer.tare_position();
@@ -83,35 +88,64 @@ void auto_test() {
   chassis.set_drive_pid(-48, 30, true);
   chassis.wait_drive();
 
-  chassis.set_swing_pid(ez::RIGHT_SWING, 135, 90);
-  chassis.wait_drive();
-
-  chassis.set_drive_pid(-10, 100, true);
-  chassis.wait_drive();
-  chassis.set_drive_pid(20, 100, true);
-  chassis.wait_drive();
-
-  chassis.set_swing_pid(ez::LEFT_SWING, 120, SWING_SPEED);
+  chassis.set_swing_pid(ez::RIGHT_SWING, 132, 90);
   chassis.wait_drive();
 
   intake.move_velocity(0);
+
+  chassis.set_drive_pid(-5, 100, true);
+  chassis.wait_drive();
+
   Shooter.move_velocity(400);
-  pros::Task::delay(8000);
-  for(int i = 0; i < 3; i++){
-      indexer.move_absolute(150,100);
-      pros::Task::delay(100);
-      indexer.move_absolute(0,100);
-      pros::Task::delay(20);
-  }
+  pros::Task::delay(5000);
+  fire();
+  pros::Task::delay(300);
+  fire();
+  pros::Task::delay(300);
+  fire();
   Shooter.move_velocity(0);
 
-  // chassis.set_drive_pid(-12, DRIVE_SPEED);
-  // chassis.wait_drive();
+  intake.move_velocity(600);
+
+  chassis.set_drive_pid(20, 100, true);
+  chassis.wait_drive();
+
+  chassis.set_swing_pid(ez::LEFT_SWING, 45, 90);
+  chassis.wait_drive();
+
+  chassis.set_drive_pid(-44, DRIVE_SPEED);
+  chassis.wait_drive();
+
+  chassis.set_swing_pid(ez::RIGHT_SWING, 95, 90);
+  chassis.wait_drive();
+
+  Shooter.move_velocity(500);
+  pros::Task::delay(6000);
+  fire();
+  pros::Task::delay(400);
+  fire();
+  pros::Task::delay(500);
+  fire();
+  Shooter.move_velocity(0);
+
+  intake.move_velocity(0);
+
+  chassis.set_swing_pid(ez::RIGHT_SWING, 90, 90);
+  chassis.wait_drive();
+
+  chassis.set_drive_pid(-7, DRIVE_SPEED, true);
+  chassis.wait_drive();
+
+  Roller.move_relative(400, 600);
+
+  chassis.set_drive_pid(5, DRIVE_SPEED, true);
+  chassis.wait_drive();
+
 
   // chassis.set_turn_pid(90, TURN_SPEED);
   // chassis.wait_drive();
 
-  // chassis.set_swing_pid(ez::LEFT_SWIsNG, 45, SWING_SPEED);
+  // chassis.set_swing_pid(ez::LEFT_SWING, 45, SWING_SPEED);
   // chassis.wait_drive();
 
   // chassis.set_drive_pid(24, DRIVE_SPEED, true);

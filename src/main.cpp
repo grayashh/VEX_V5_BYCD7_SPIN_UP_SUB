@@ -77,7 +77,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.add_autons({
-    Auton("Test Drive\n\nBYCD7.", auto_test),
+    Auton("Test Drive\n\nBYCD7.", bycd_auto),
   });
 
   // Initialize chassis and auton selector
@@ -144,8 +144,10 @@ void opcontrol() {
   indexer.set_zero_position(0);
   indexer.tare_position();
 
+  // Controller 세팅
 
   while (true) {
+    master.print(0, 0, "Shooter: %.0f\n", U_Shooter.get_actual_velocity());
 
     // chassis.tank(); // Tank control
     chassis.arcade_standard(ez::SPLIT); // Standard split arcade
@@ -185,11 +187,20 @@ void opcontrol() {
       Roller.move_velocity(0);
     }
 
+        // Roller
+    if (master.get_digital(DIGITAL_Y)) {
+      EndGame.move_velocity(600);
+    }
+    else{
+      EndGame.move_velocity(0);
+    }
+    
+
     // indexer
     if (master.get_digital(DIGITAL_R1)) {
-      indexer.move_absolute(150,100);
-      pros::delay(100);
-      indexer.move_absolute(0,100);
+      indexer.move_absolute(180,100);
+      pros::Task::delay(500);
+      indexer.move_absolute(-20,100);
     }
 
 // Shooter
@@ -198,11 +209,11 @@ void opcontrol() {
     }
     else if (master.get_digital(DIGITAL_UP))
     {
-      Shooter.move_velocity(300);
+      Shooter.move_velocity(350);
     }
     
     else if (master.get_digital(DIGITAL_LEFT)) {
-      Shooter.move_velocity(-30);
+      Shooter.move_velocity(300);
     }
     else if (master.get_digital(DIGITAL_DOWN)) {
       Shooter.move_velocity(0);
