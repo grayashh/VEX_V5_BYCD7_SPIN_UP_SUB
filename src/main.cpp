@@ -140,6 +140,7 @@ void opcontrol() {
   bool intake_flag = {false};
   bool intake_reverse_flag = {false};
 
+  indexer.move_relative(-10, 100);
   // Indexr Position 영점 세팅
   indexer.set_zero_position(0);
   indexer.tare_position();
@@ -198,9 +199,10 @@ void opcontrol() {
 
     // indexer
     if (master.get_digital(DIGITAL_R1)) {
-      indexer.move_absolute(180,100);
+      indexer.move_relative(300,600);
+      pros::Task::delay(100);
+      indexer.move_relative(-300,600);
       pros::Task::delay(500);
-      indexer.move_absolute(-20,100);
     }
 
 // Shooter
